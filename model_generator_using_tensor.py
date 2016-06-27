@@ -1,17 +1,16 @@
 __author__ = 'dipanjan'
 import numpy as np
 import scipy as sc
-print np.__version__
-print sc.__version__
-from sklearn import datasets, linear_model
 import matplotlib.pyplot as plt
 import data_generator_learning as dgl
 import data_generator_validation as dgv
 import data_generator_test as dgt
 import tensorflow as tf
+import math
+from sklearn import datasets, linear_model
 from six.moves import cPickle as pickle
 from six.moves import range
-import math
+
 
 num_steps_for_batch=10001
 batch_size = 128
