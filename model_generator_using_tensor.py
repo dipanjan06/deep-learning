@@ -13,19 +13,11 @@ from six.moves import cPickle as pickle
 from six.moves import range
 import math
 
-<<<<<<< HEAD
 num_steps_for_batch=10001
 batch_size = 128
 hidden1_units=800
 hidden2_units=800
 regularizers_constant =0.0000000000001
-=======
-num_steps_for_batch=1000
-batch_size = 128
-hidden1_units=500
-hidden2_units=400
-regularizers_constant =0.0000001
->>>>>>> 457c1e55b7981848e90aafd5e676dab301da2c78
 
 class Config:
     nn_input_dim = 2  # input layer dimensionality
@@ -33,17 +25,10 @@ class Config:
     # Gradient descent parameters (hard coded)
     #epsilon = 0.0001  # learning rate for gradient descent
     #reg_lambda = 0.0000000001  # regularization strength
-<<<<<<< HEAD
     sample_dim = 1024   # sample size
     sample_dim_valid = 256   # sample size
     sample_dim_test = 1024  # sample size
     x_dim = 2
-=======
-    sample_dim = 1000   # sample size
-    sample_dim_valid = 300   # sample size
-    sample_dim_test =128  # sample size
-    x_dim = 1
->>>>>>> 457c1e55b7981848e90aafd5e676dab301da2c78
     num_labels = 1
 
 
@@ -60,7 +45,6 @@ def load_data():
 
     
     data , y= dgl.read_data()
-<<<<<<< HEAD
     data = np.array(data).astype('float32')
     y = np.array(y).astype('float32')
     dummy=np.zeros((Config.sample_dim,),dtype=np.float32)
@@ -85,32 +69,6 @@ def load_data():
     dummy_test=np.reshape(dummy_test, (Config.sample_dim_test, 1) )
     data_test=np.reshape(data_test, (Config.sample_dim_test, 1) )
     data_test = np.append(data_test, dummy_test,axis=1)
-=======
-    data = np.array(data).astype('float')
-    y = np.array(y).astype('float')
-    dummy=np.zeros((Config.sample_dim,),dtype=np.float32)
-    data=np.reshape(data, (Config.sample_dim, 1) )
-    dummy=np.reshape(dummy, (Config.sample_dim, 1) )
-    #data = np.append(data, dummy,axis=1)
-    y=np.reshape(y, (Config.sample_dim, 1) )
-    
-    data_valid , y_valid= dgv.read_data()
-    data_valid = np.array(data_valid).astype('float')
-    y_valid = np.array(y_valid).astype('float')
-    dummy_valid=np.zeros((Config.sample_dim_valid,),dtype=np.float32)
-    dummy_valid=np.reshape(dummy_valid, (Config.sample_dim_valid, 1) )
-    data_valid=np.reshape(data_valid, (Config.sample_dim_valid, 1) )
-    #data_valid = np.append(data_valid, dummy_valid,axis=1)
-    y_valid=np.reshape(y_valid, (Config.sample_dim_valid, 1) )
-    
-    data_test , y_test= dgt.read_data()
-    data_test = np.array(data_test).astype('float')
-    y_test = np.array(y_test).astype('float')
-    dummy_test=np.zeros((Config.sample_dim_test,),dtype=np.float32)
-    dummy_test=np.reshape(dummy_test, (Config.sample_dim_test, 1) )
-    data_test=np.reshape(data_test, (Config.sample_dim_test, 1) )
-    #data_test = np.append(data_test, dummy_test,axis=1)
->>>>>>> 457c1e55b7981848e90aafd5e676dab301da2c78
     y_test=np.reshape(y_test, (Config.sample_dim_test, 1) )
     
     print('********')
@@ -124,7 +82,6 @@ def load_data():
 
 
 
-<<<<<<< HEAD
 def inference_for_network(X,tf_test_dataset, hidden1_units, hidden2_units,isTest,nlf='relu'):
     # Hidden 1
     with tf.name_scope('hidden1'):
@@ -147,18 +104,6 @@ def inference_for_network(X,tf_test_dataset, hidden1_units, hidden2_units,isTest
         else :
             hidden1 = tf.nn.tanh(malproduct)
                                  
-=======
-def inference_for_network(X, hidden1_units, hidden2_units,nlf='relu'):
-    # Hidden 1
-    with tf.name_scope('hidden1'):
-        weights = tf.Variable(tf.truncated_normal([Config.x_dim, hidden1_units],stddev=1.0 / math.sqrt(float(Config.x_dim))),name='weights')
-        biases = tf.Variable(tf.zeros([hidden1_units]),name='biases')
-        if(nlf == 'sigmoid'):
-            hidden1 = tf.nn.sigmoid(tf.matmul(X, weights) + biases)
-        else :
-            hidden1 = tf.nn.relu(tf.matmul(X, weights) + biases)
-
->>>>>>> 457c1e55b7981848e90aafd5e676dab301da2c78
         regloss1 = tf.nn.l2_loss(weights) + tf.nn.l2_loss(biases)
     # Hidden 2
     with tf.name_scope('hidden2'):
@@ -166,15 +111,10 @@ def inference_for_network(X, hidden1_units, hidden2_units,nlf='relu'):
         biases = tf.Variable(tf.zeros([hidden2_units]),name='biases')
         if(nlf == 'sigmoid'):
             hidden2 = tf.nn.sigmoid(tf.matmul(hidden1, weights) + biases)
-<<<<<<< HEAD
         elif(nlf == 'relu'):
             hidden2 = tf.nn.relu(tf.matmul(hidden1, weights) + biases)
         else:
             hidden2 = tf.nn.tanh(tf.matmul(hidden1, weights) + biases)
-=======
-        else :
-            hidden2 = tf.nn.relu(tf.matmul(hidden1, weights) + biases)
->>>>>>> 457c1e55b7981848e90aafd5e676dab301da2c78
         
         regloss2 = tf.nn.l2_loss(weights) + tf.nn.l2_loss(biases)
     # Linear
@@ -191,7 +131,6 @@ def inference_for_network(X, hidden1_units, hidden2_units,nlf='relu'):
 
 def loss(activation, y ,regularizers):
     #labels = tf.to_int64(labels)
-<<<<<<< HEAD
     #cross_entropy = tf.nn.softmax_cross_entropy_with_logits(activation, y)
     #loss = tf.reduce_mean(cross_entropy,name='CrossEntLoss')
     
@@ -204,16 +143,6 @@ def loss(activation, y ,regularizers):
     
     return loss
                          
-=======
-    #cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits, labels)
-    #loss = tf.reduce_mean(cross_entropy,name='CrossEntLoss')
-    
-    loss = tf.reduce_sum(tf.pow(activation-y, 2),name='MSE')/(2*batch_size) #Data  loss
-    
-    #loss += regularizers_constant * regularizers
-    
-    return loss
->>>>>>> 457c1e55b7981848e90aafd5e676dab301da2c78
 def training(loss, learning_rate):
     """Sets up the training Ops.
         Creates a summarizer to track the loss over time in TensorBoard.
@@ -251,7 +180,6 @@ def training_with_momentum(loss,train_size):
                                                staircase=True)
                                                # Use simple momentum for the optimization.
     train_op = tf.train.MomentumOptimizer(learning_rate,0.9).minimize(loss,global_step=batch)
-<<<<<<< HEAD
     
     
     return train_op
@@ -262,10 +190,6 @@ def traing_with_admoptimizer(loss,train_size):
 
     return train_op;
 
-=======
-    return train_op
-
->>>>>>> 457c1e55b7981848e90aafd5e676dab301da2c78
 def run_training(train_dataset, train_labels,valid_dataset, valid_labels,test_dataset,test_labels,nlf):
 
     
@@ -283,13 +207,9 @@ def run_training(train_dataset, train_labels,valid_dataset, valid_labels,test_da
         tf_test_dataset = tf.constant(test_dataset)
         # Build a Graph that computes predictions from the inference model.
         
-<<<<<<< HEAD
         isTest = tf.placeholder(tf.bool)
         
         activation ,regloss = inference_for_network(tf_train_dataset,tf_test_dataset,hidden1_units,hidden2_units,isTest,nlf)
-=======
-        activation ,regloss = inference_for_network(tf_train_dataset,hidden1_units,hidden2_units,nlf)
->>>>>>> 457c1e55b7981848e90aafd5e676dab301da2c78
         
         # Add to the Graph the Ops for loss calculation.
         loss_tr = loss(activation, tf_train_labels,regloss)
@@ -297,12 +217,8 @@ def run_training(train_dataset, train_labels,valid_dataset, valid_labels,test_da
         # Add to the Graph the Ops that calculate and apply gradints.
         #train_op = training(loss_tr, 0.5)
         #train_op = training(loss_tr, 0.5)
-<<<<<<< HEAD
         #train_op = training_with_momentum(loss_tr,Config.sample_dim)
         train_op = traing_with_admoptimizer(loss_tr,Config.sample_dim)
-=======
-        train_op = training_with_momentum(loss_tr,Config.sample_dim)
->>>>>>> 457c1e55b7981848e90aafd5e676dab301da2c78
         
         #tp = prediction(activation,'traing_softmax_for_predict')
         #vp = prediction(activation,'validation_softmax_for_predict')
@@ -330,11 +246,7 @@ def run_training(train_dataset, train_labels,valid_dataset, valid_labels,test_da
             # Generate a minibatch.
             batch_data = train_dataset[offset:(offset + batch_size), :]
             batch_labels = train_labels[offset:(offset + batch_size), :]
-<<<<<<< HEAD
             feed_dict = {tf_train_dataset : batch_data, tf_train_labels : batch_labels,isTest :False}
-=======
-            feed_dict = {tf_train_dataset : batch_data, tf_train_labels : batch_labels}
->>>>>>> 457c1e55b7981848e90aafd5e676dab301da2c78
             _, l, predictions = session.run([train_op, loss_tr, activation], feed_dict=feed_dict)
             if (step % 500 == 0):
                 print("Minibatch loss at step %d: %f" % (step, l))
@@ -344,11 +256,7 @@ def run_training(train_dataset, train_labels,valid_dataset, valid_labels,test_da
             offset = (step * batch_size) % (valid_labels.shape[0] - batch_size)
             batch_data = valid_dataset[offset:(offset + batch_size), :]
             batch_labels = valid_labels[offset:(offset + batch_size), :]
-<<<<<<< HEAD
             feed_dict = {tf_train_dataset : batch_data, tf_train_labels : batch_labels,isTest : False}
-=======
-            feed_dict = {tf_train_dataset : batch_data, tf_train_labels : batch_labels}
->>>>>>> 457c1e55b7981848e90aafd5e676dab301da2c78
             val_loss = session.run(loss_tr, feed_dict=feed_dict)
             if (step % 500 == 0):
                 print("Validation loss: %f" % val_loss)
@@ -357,11 +265,7 @@ def run_training(train_dataset, train_labels,valid_dataset, valid_labels,test_da
 
         batch_data = test_dataset[0:(0 + batch_size), :]
         batch_labels = test_labels[0:(0 + batch_size), :]
-<<<<<<< HEAD
         feed_dict = {tf_train_dataset : batch_data, tf_train_labels : batch_labels,isTest : True }
-=======
-        feed_dict = {tf_train_dataset : batch_data, tf_train_labels : batch_labels}
->>>>>>> 457c1e55b7981848e90aafd5e676dab301da2c78
         activation = session.run(activation, feed_dict=feed_dict)
 
         plt.subplot(3, 1, 1)
@@ -373,15 +277,9 @@ def run_training(train_dataset, train_labels,valid_dataset, valid_labels,test_da
 
         plt.subplot(3, 1, 2)
         plt.title("Deep Learning Generated PDF")
-<<<<<<< HEAD
         colors = np.random.rand(Config.sample_dim_test)
         area = np.pi * (5 * np.random.rand(Config.sample_dim_test))**2
         plt.scatter(test_dataset[:,0],activation, s=area, c=colors, alpha=0.5)
-=======
-        colors = np.random.rand(Config.sample_dim)
-        area = np.pi * (5 * np.random.rand(Config.sample_dim))**2
-        plt.scatter(batch_data[:,0],activation, s=area, c=colors, alpha=0.5)
->>>>>>> 457c1e55b7981848e90aafd5e676dab301da2c78
 
 
 
@@ -402,13 +300,8 @@ def run_training(train_dataset, train_labels,valid_dataset, valid_labels,test_da
         plt.subplot(3, 1, 3)
     
         plt.title("LinearRegression Generated PDF")
-<<<<<<< HEAD
         colors = np.random.rand(Config.sample_dim_test)
         area = np.pi * (5 * np.random.rand(Config.sample_dim_test))**2
-=======
-        colors = np.random.rand(Config.sample_dim)
-        area = np.pi * (5 * np.random.rand(Config.sample_dim))**2
->>>>>>> 457c1e55b7981848e90aafd5e676dab301da2c78
         plt.scatter(test_dataset[:,0],output, s=area, c=colors, alpha=0.5)
         plt.show()
 
@@ -447,11 +340,7 @@ def main():
     train_dataset, train_labels,valid_dataset, valid_labels,test_dataset,test_labels = load_data()
     np.seterr( over='ignore' )
     #visualizeActualCurve(data,y)
-<<<<<<< HEAD
     run_training(train_dataset, train_labels,valid_dataset, valid_labels,test_dataset,test_labels,'relu')
-=======
-    run_training(train_dataset, train_labels,valid_dataset, valid_labels,test_dataset,test_labels,'sigmoid')
->>>>>>> 457c1e55b7981848e90aafd5e676dab301da2c78
     #model = build_model(data, y, 5,10000,data_valid,y_valid, print_loss=True)
 #store_model(model,'model.pickle')
     #visualizePredictedCurve(data_test, y_test, model)

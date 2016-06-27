@@ -24,13 +24,9 @@ def generate_and_store_data(dim):
     #y = 0.1*X+0.5*np.power(X,2)+0.2*np.power(X,3)+0.1*np.power(X,4)+0.01*np.power(X,5)
     # y = 0.1*X+0.5*np.power(X,2)
     #+0.2*np.power(X,3)+0.1*np.power(X,4)+0.01*np.power(X,5)
-<<<<<<< HEAD
     #y=Config.b+Config.w*X
     #y = 0.1*X+0.5*np.power(X,2)
     y = 0.1*X+0.5*np.power(X,2)+0.2*np.power(X,3)+0.1*np.sin(X)+0.01*np.cos(X)+0.022*np.tan(X)
-=======
-    y=Config.b+Config.w*X
->>>>>>> 457c1e55b7981848e90aafd5e676dab301da2c78
     np.savetxt(
                'RawDataForValidation.csv',           # file name
                X,                # array to save
