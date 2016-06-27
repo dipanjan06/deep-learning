@@ -15,9 +15,9 @@ import math
 
 num_steps_for_batch=10001
 batch_size = 128
-hidden1_units=1000
-hidden2_units=2000
-regularizers_constant =0.0000001
+hidden1_units=800
+hidden2_units=800
+regularizers_constant =0.0000000000001
 
 class Config:
     nn_input_dim = 2  # input layer dimensionality
@@ -25,10 +25,10 @@ class Config:
     # Gradient descent parameters (hard coded)
     #epsilon = 0.0001  # learning rate for gradient descent
     #reg_lambda = 0.0000000001  # regularization strength
-    sample_dim = 1000   # sample size
-    sample_dim_valid = 300   # sample size
-    sample_dim_test =1000  # sample size
-    x_dim = 1
+    sample_dim = 1024   # sample size
+    sample_dim_valid = 256   # sample size
+    sample_dim_test = 1024  # sample size
+    x_dim = 2
     num_labels = 1
 
 
@@ -50,7 +50,7 @@ def load_data():
     dummy=np.zeros((Config.sample_dim,),dtype=np.float32)
     data=np.reshape(data, (Config.sample_dim, 1) )
     dummy=np.reshape(dummy, (Config.sample_dim, 1) )
-    #data = np.append(data, dummy,axis=1)
+    data = np.append(data, dummy,axis=1)
     y=np.reshape(y, (Config.sample_dim, 1) )
     
     data_valid , y_valid= dgv.read_data()
@@ -59,7 +59,7 @@ def load_data():
     dummy_valid=np.zeros((Config.sample_dim_valid,),dtype=np.float32)
     dummy_valid=np.reshape(dummy_valid, (Config.sample_dim_valid, 1) )
     data_valid=np.reshape(data_valid, (Config.sample_dim_valid, 1) )
-    #data_valid = np.append(data_valid, dummy_valid,axis=1)
+    data_valid = np.append(data_valid, dummy_valid,axis=1)
     y_valid=np.reshape(y_valid, (Config.sample_dim_valid, 1) )
     
     data_test , y_test= dgt.read_data()
@@ -68,7 +68,7 @@ def load_data():
     dummy_test=np.zeros((Config.sample_dim_test,),dtype=np.float32)
     dummy_test=np.reshape(dummy_test, (Config.sample_dim_test, 1) )
     data_test=np.reshape(data_test, (Config.sample_dim_test, 1) )
-    #data_test = np.append(data_test, dummy_test,axis=1)
+    data_test = np.append(data_test, dummy_test,axis=1)
     y_test=np.reshape(y_test, (Config.sample_dim_test, 1) )
     
     print('********')
@@ -91,6 +91,7 @@ def inference_for_network(X,tf_test_dataset, hidden1_units, hidden2_units,isTest
         
         
         malproduct = tf.cond(isTest, lambda: (tf.matmul(tf_test_dataset, weights) + biases), lambda: (tf.matmul(X, weights) + biases))
+        #malproduct = tf.matmul(X, weights) + biases
 #        if(tf.equal(isTest, [1.0]).True):
 #            malproduct = tf.matmul(tf_test_dataset, weights) + biases
 #        else:
@@ -98,8 +99,10 @@ def inference_for_network(X,tf_test_dataset, hidden1_units, hidden2_units,isTest
 
         if(nlf == 'sigmoid'):
             hidden1 = tf.nn.sigmoid(malproduct)
-        else :
+        elif(nlf == 'relu') :
             hidden1 = tf.nn.relu(malproduct)
+        else :
+            hidden1 = tf.nn.tanh(malproduct)
                                  
         regloss1 = tf.nn.l2_loss(weights) + tf.nn.l2_loss(biases)
     # Hidden 2
@@ -108,8 +111,10 @@ def inference_for_network(X,tf_test_dataset, hidden1_units, hidden2_units,isTest
         biases = tf.Variable(tf.zeros([hidden2_units]),name='biases')
         if(nlf == 'sigmoid'):
             hidden2 = tf.nn.sigmoid(tf.matmul(hidden1, weights) + biases)
-        else :
+        elif(nlf == 'relu'):
             hidden2 = tf.nn.relu(tf.matmul(hidden1, weights) + biases)
+        else:
+            hidden2 = tf.nn.tanh(tf.matmul(hidden1, weights) + biases)
         
         regloss2 = tf.nn.l2_loss(weights) + tf.nn.l2_loss(biases)
     # Linear
@@ -126,14 +131,18 @@ def inference_for_network(X,tf_test_dataset, hidden1_units, hidden2_units,isTest
 
 def loss(activation, y ,regularizers):
     #labels = tf.to_int64(labels)
-    #cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits, labels)
+    #cross_entropy = tf.nn.softmax_cross_entropy_with_logits(activation, y)
     #loss = tf.reduce_mean(cross_entropy,name='CrossEntLoss')
     
-    loss = tf.reduce_sum(tf.pow(activation-y, 2),name='MSE')/(2*batch_size) #Data  loss
+    loss = tf.reduce_sum(((activation-y)**2)/batch_size) #Data  loss
+    #loss = (activation-y)*0.5
+    #loss = tf.reduce_sum(tf.square(activation-y))#/(2*batch_size) #Data  loss
+    #loss = tf.sub(activation ,y)
     
-    #loss += regularizers_constant * regularizers
+    loss += regularizers_constant * regularizers
     
     return loss
+                         
 def training(loss, learning_rate):
     """Sets up the training Ops.
         Creates a summarizer to track the loss over time in TensorBoard.
@@ -171,7 +180,15 @@ def training_with_momentum(loss,train_size):
                                                staircase=True)
                                                # Use simple momentum for the optimization.
     train_op = tf.train.MomentumOptimizer(learning_rate,0.9).minimize(loss,global_step=batch)
+    
+    
     return train_op
+
+def traing_with_admoptimizer(loss,train_size):
+    tf.scalar_summary(loss.op.name, loss)
+    train_op = tf.train.AdamOptimizer().minimize(loss)
+
+    return train_op;
 
 def run_training(train_dataset, train_labels,valid_dataset, valid_labels,test_dataset,test_labels,nlf):
 
@@ -200,7 +217,8 @@ def run_training(train_dataset, train_labels,valid_dataset, valid_labels,test_da
         # Add to the Graph the Ops that calculate and apply gradints.
         #train_op = training(loss_tr, 0.5)
         #train_op = training(loss_tr, 0.5)
-        train_op = training_with_momentum(loss_tr,Config.sample_dim)
+        #train_op = training_with_momentum(loss_tr,Config.sample_dim)
+        train_op = traing_with_admoptimizer(loss_tr,Config.sample_dim)
         
         #tp = prediction(activation,'traing_softmax_for_predict')
         #vp = prediction(activation,'validation_softmax_for_predict')
@@ -245,8 +263,8 @@ def run_training(train_dataset, train_labels,valid_dataset, valid_labels,test_da
         saver.save(session,'model.ckpt')
 
 
-        batch_data = train_dataset[0:(0 + batch_size), :]
-        batch_labels = train_labels[0:(0 + batch_size), :]
+        batch_data = test_dataset[0:(0 + batch_size), :]
+        batch_labels = test_labels[0:(0 + batch_size), :]
         feed_dict = {tf_train_dataset : batch_data, tf_train_labels : batch_labels,isTest : True }
         activation = session.run(activation, feed_dict=feed_dict)
 
@@ -282,8 +300,8 @@ def run_training(train_dataset, train_labels,valid_dataset, valid_labels,test_da
         plt.subplot(3, 1, 3)
     
         plt.title("LinearRegression Generated PDF")
-        colors = np.random.rand(Config.sample_dim)
-        area = np.pi * (5 * np.random.rand(Config.sample_dim))**2
+        colors = np.random.rand(Config.sample_dim_test)
+        area = np.pi * (5 * np.random.rand(Config.sample_dim_test))**2
         plt.scatter(test_dataset[:,0],output, s=area, c=colors, alpha=0.5)
         plt.show()
 
@@ -318,11 +336,11 @@ def accuracy(predictions, labels):
     return (100.0 * (predictions - labels)/predictions.shape[0])
 
 def main():
-    generate_data()
+    #generate_data()
     train_dataset, train_labels,valid_dataset, valid_labels,test_dataset,test_labels = load_data()
     np.seterr( over='ignore' )
     #visualizeActualCurve(data,y)
-    run_training(train_dataset, train_labels,valid_dataset, valid_labels,test_dataset,test_labels,'sigmoid')
+    run_training(train_dataset, train_labels,valid_dataset, valid_labels,test_dataset,test_labels,'relu')
     #model = build_model(data, y, 5,10000,data_valid,y_valid, print_loss=True)
 #store_model(model,'model.pickle')
     #visualizePredictedCurve(data_test, y_test, model)
