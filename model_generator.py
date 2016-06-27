@@ -1,14 +1,26 @@
 __author__ = 'dipanjan'
+<<<<<<< HEAD
 
 import numpy as np
 import scipy as sc
+=======
+import numpy as np
+import scipy as sc
+print np.__version__
+print sc.__version__
+from sklearn import datasets, linear_model
+>>>>>>> 457c1e55b7981848e90aafd5e676dab301da2c78
 import matplotlib.pyplot as plt
 import data_generator_learning as dgl
 import data_generator_validation as dgv
 import data_generator_test as dgt
+<<<<<<< HEAD
 
 from six.moves import cPickle as pickle
 from sklearn import datasets, linear_model
+=======
+from six.moves import cPickle as pickle
+>>>>>>> 457c1e55b7981848e90aafd5e676dab301da2c78
 
 
 class Config:
@@ -17,9 +29,15 @@ class Config:
     # Gradient descent parameters (hard coded)
     epsilon = 0.0001  # learning rate for gradient descent
     reg_lambda = 0.0000000001  # regularization strength
+<<<<<<< HEAD
     sample_dim =1000   # sample size
     sample_dim_valid =300   # sample size
     sample_dim_test =1000  # sample size
+=======
+    sample_dim =100   # sample size
+    sample_dim_valid =30   # sample size
+    sample_dim_test =10  # sample size
+>>>>>>> 457c1e55b7981848e90aafd5e676dab301da2c78
 
 
 #def read_data(filename):
@@ -281,7 +299,11 @@ def main():
     data ,y ,data_valid,y_valid,data_test,y_test = load_data()
     np.seterr( over='ignore' )
     #visualizeActualCurve(data,y)
+<<<<<<< HEAD
     model = build_model(data, y, 200,10000,data_valid,y_valid, print_loss=True)
+=======
+    model = build_model(data, y, 5,10000,data_valid,y_valid, print_loss=True)
+>>>>>>> 457c1e55b7981848e90aafd5e676dab301da2c78
     store_model(model,'model.pickle')
     #visualizePredictedCurve(data_test, y_test, model)
     #print("Test Loss  %f" % ( calculate_loss(model, data_test, y_test)))

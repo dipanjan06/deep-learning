@@ -1,13 +1,24 @@
 __author__ = 'dipanjan'
 import numpy as np
 import scipy as sc
+<<<<<<< HEAD
+=======
+print np.__version__
+print sc.__version__
+from sklearn import datasets, linear_model
+>>>>>>> 457c1e55b7981848e90aafd5e676dab301da2c78
 import matplotlib.pyplot as plt
 import data_generator_learning as dgl
 import data_generator_validation as dgv
 import data_generator_test as dgt
+<<<<<<< HEAD
 import model_generator as modelgn
 from sklearn import datasets, linear_model
 from six.moves import cPickle as pickle
+=======
+from six.moves import cPickle as pickle
+import model_generator as modelgn
+>>>>>>> 457c1e55b7981848e90aafd5e676dab301da2c78
 
 
 class Config:
@@ -16,9 +27,15 @@ class Config:
     # Gradient descent parameters (hard coded)
     epsilon = 0.0001  # learning rate for gradient descent
     reg_lambda = 0.0000000001  # regularization strength
+<<<<<<< HEAD
     sample_dim =1000   # sample size
     sample_dim_valid =300   # sample size
     sample_dim_test =1000  # sample size
+=======
+    sample_dim =100   # sample size
+    sample_dim_valid =30   # sample size
+    sample_dim_test =10  # sample size
+>>>>>>> 457c1e55b7981848e90aafd5e676dab301da2c78
 
 
 #def read_data(filename):
@@ -60,8 +77,13 @@ def visualizePredictedCurveUsingLinearRegression(X80,y80,X20,y20):
     plt.subplot(3, 1, 3)
     #plt.title('Hidden Layer size %d' % nn_hdim)
     plt.title("LinearRegression Generated PDF")
+<<<<<<< HEAD
     colors = np.random.rand(Config.sample_dim_test)
     area = np.pi * (5 * np.random.rand(Config.sample_dim_test))**2
+=======
+    colors = np.random.rand(Config.sample_dim)
+    area = np.pi * (5 * np.random.rand(Config.sample_dim))**2
+>>>>>>> 457c1e55b7981848e90aafd5e676dab301da2c78
     plt.scatter(X20[:,0],output, s=area, c=colors, alpha=0.5)
 
 
@@ -77,8 +99,13 @@ def visualizePredictedCurve(X, y, model):
     plt.subplot(3, 1, 2)
     #plt.title('Hidden Layer size %d' % nn_hdim)
     plt.title("Deep Learning Generated PDF")
+<<<<<<< HEAD
     colors = np.random.rand(Config.sample_dim_test)
     area = np.pi * (5 * np.random.rand(Config.sample_dim_test))**2
+=======
+    colors = np.random.rand(Config.sample_dim)
+    area = np.pi * (5 * np.random.rand(Config.sample_dim))**2
+>>>>>>> 457c1e55b7981848e90aafd5e676dab301da2c78
     plt.scatter(X[:,0],output, s=area, c=colors, alpha=0.5)
 #plt.show()
 
